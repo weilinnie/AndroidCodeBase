@@ -1,17 +1,24 @@
 package info.winiex.androidbasement.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 public class AppData {
 
-	private static Context mContext;
+	private static Context sContext;
+
+	private static Resources sResources;
 
 	public static void init(Context context) {
-		mContext = context;
+		sContext = context;
+		sResources = context.getResources();
 	}
 
 	public static Context getContext() {
-		return mContext;
+		return sContext;
 	}
 
+	public static Resources getResources() {
+		return sResources;
+	}
 }
