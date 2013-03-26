@@ -1,5 +1,6 @@
 package info.winiex.androidbasement.image.utils;
 
+import info.winiex.androidbasement.image.type.MediaStoreImage;
 import info.winiex.androidbasement.utils.AppData;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,12 +16,6 @@ public class MediaStoreImageUtils {
 	public final static int DECODE_THUMBNAIL = 2;
 
 	public final static int DECODE_ORIGIN = 3;
-
-	public final static int THUMBANIL_MINI = MediaStore.Images.Thumbnails.MINI_KIND;
-
-	public final static int THUMBNAIL_MICRO = MediaStore.Images.Thumbnails.MICRO_KIND;
-
-	public final static int THUMBNAIL_FULL_SCREEN = MediaStore.Images.Thumbnails.FULL_SCREEN_KIND;
 
 	private final static int DEFAULT_REQ_WIDTH = 100;
 
@@ -43,13 +38,13 @@ public class MediaStoreImageUtils {
 	public static Bitmap decodeBitmapOriginFromMediaStoreInternal(int imageId,
 			int reqWidth, int reqHeight) {
 		return decodeBitmapFromMediaStore(imageId, reqWidth, reqHeight,
-				DECODE_INTERNAL, DECODE_ORIGIN, THUMBNAIL_MICRO);
+				DECODE_INTERNAL, DECODE_ORIGIN, MediaStoreImage.THUMBNAIL_MICRO);
 	}
 
 	public static Bitmap decodeBitmapOriginFromMediaStoreExternal(int imageId,
 			int reqWidth, int reqHeight) {
 		return decodeBitmapFromMediaStore(imageId, reqWidth, reqHeight,
-				DECODE_EXTERNAL, DECODE_ORIGIN, THUMBNAIL_MICRO);
+				DECODE_EXTERNAL, DECODE_ORIGIN, MediaStoreImage.THUMBNAIL_MICRO);
 	}
 
 	private static Bitmap decodeBitmapFromMediaStore(int imageId, int reqWidth,

@@ -47,15 +47,15 @@ public class HttpImageWorker extends ImageWorker {
 		return false;
 	}
 
-	protected void loadBitmap(HttpImage httpImage, ImageView imageView) {
+	protected void loadBitmap(ImageView imageView) {
 		if (cancelPotentialWork(imageView)) {
-			final ImageWorker imageWorker = new HttpImageWorker(httpImage,
+			final ImageWorker imageWorker = new HttpImageWorker(mHttpImage,
 					imageView);
 			final ImageWorker.AsyncDrawable asyncDrawable = new ImageWorker.AsyncDrawable(
 					ImageUtils.defaultBitmap, imageWorker);
 			imageView.setImageDrawable(asyncDrawable);
-			imageWorker.execute(httpImage.getReqWidth(),
-					httpImage.getReqHeight());
+			imageWorker.execute(mHttpImage.getReqWidth(),
+					mHttpImage.getReqHeight());
 		}
 	}
 

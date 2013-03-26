@@ -20,6 +20,7 @@ public class DiskImage extends BaseImage {
 				+ "height" + String.valueOf(mReqHeight);
 	}
 
+	@Deprecated
 	@Override
 	public String getDiskCacheKey() {
 		return mImageFilePath.replaceAll("[.:/,%?&=]", "+").replaceAll("[+]+",

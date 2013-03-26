@@ -54,15 +54,15 @@ public class ResourceImageWorker extends ImageWorker {
 		return false;
 	}
 
-	public void loadBitmap(ResourceImage resourceImage, ImageView imageView) {
+	public void loadBitmap(ImageView imageView) {
 		if (cancelPotentialWork(imageView)) {
 			final ResourceImageWorker imageWorker = new ResourceImageWorker(
-					resourceImage, imageView);
+					mResourceImage, imageView);
 			final ImageWorker.AsyncDrawable asyncDrawable = new ImageWorker.AsyncDrawable(
 					ImageUtils.defaultBitmap, imageWorker);
 			imageView.setImageDrawable(asyncDrawable);
-			imageWorker.execute(resourceImage.getReqWidth(),
-					resourceImage.getReqHeight());
+			imageWorker.execute(mResourceImage.getReqWidth(),
+					mResourceImage.getReqHeight());
 		}
 	}
 }

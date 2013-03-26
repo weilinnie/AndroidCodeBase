@@ -63,8 +63,8 @@ public class DiskImageWorker extends ImageWorker {
 		return false;
 	}
 
-	public void loadBitmap(DiskImage diskImage, ImageView imageView) {
-		final String imageCacheKey = diskImage.getMemCacheKey();
+	public void loadBitmap(ImageView imageView) {
+		final String imageCacheKey = mDiskImage.getMemCacheKey();
 
 		final Bitmap bitmapMemCached = mMemImageCache
 				.getBitmapFromMemCache(imageCacheKey);
@@ -76,13 +76,13 @@ public class DiskImageWorker extends ImageWorker {
 		}
 
 		if (cancelPotentialWork(imageView)) {
-			final ImageWorker imageWorker = new DiskImageWorker(diskImage,
+			final ImageWorker imageWorker = new DiskImageWorker(mDiskImage,
 					imageView);
 			final ImageWorker.AsyncDrawable asyncDrawable = new ImageWorker.AsyncDrawable(
 					ImageUtils.defaultBitmap, imageWorker);
 			imageView.setImageDrawable(asyncDrawable);
-			imageWorker.execute(diskImage.getReqWidth(),
-					diskImage.getReqHeight());
+			imageWorker.execute(mDiskImage.getReqWidth(),
+					mDiskImage.getReqHeight());
 		}
 	}
 

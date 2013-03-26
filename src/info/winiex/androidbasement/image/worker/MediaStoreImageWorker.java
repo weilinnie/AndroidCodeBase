@@ -1,28 +1,20 @@
 package info.winiex.androidbasement.image.worker;
 
+import info.winiex.androidbasement.image.cache.MemImageCache;
+import info.winiex.androidbasement.image.type.MediaStoreImage;
 import info.winiex.androidbasement.image.utils.ImageUtils;
 import info.winiex.androidbasement.image.utils.MediaStoreImageUtils;
-import info.winiex.androidbasement.image.worker.ImageWorker;
 
 import java.lang.ref.WeakReference;
 
 import android.graphics.Bitmap;
-import android.provider.MediaStore;
 import android.widget.ImageView;
 
 public class MediaStoreImageWorker extends ImageWorker {
 
-	private int mImageId;
-
 	private int mLoadImageType;
 
 	private int mLoadImageLocation;
-
-	public static int THUMBNAIL_MINI = MediaStore.Images.Thumbnails.MINI_KIND;
-
-	public static int THUMBNAIL_MICRO = MediaStore.Images.Thumbnails.MICRO_KIND;
-
-	public static int THUMBNAIL_FULL_SCREEN = MediaStore.Images.Thumbnails.FULL_SCREEN_KIND;
 
 	private static int LOAD_THUMBNAIL = 1;
 
@@ -32,17 +24,19 @@ public class MediaStoreImageWorker extends ImageWorker {
 
 	private static int LOAD_EXTERNAL = 2;
 
-	private static int DEFAULT_REQ_WIDTH = 100;
+	private MediaStoreImage mMediaStoreImage;
 
-	private static int DEFAULT_REQ_HEIGHT = 100;
+	private MemImageCache mMemImageCache;
 
-	public MediaStoreImageWorker(int imageId, ImageView imageView) {
-		mImageId = imageId;
+	public MediaStoreImageWorker(MediaStoreImage mediaStoreImage,
+			ImageView imageView) {
+		mMediaStoreImage = mediaStoreImage;
 		mImageReference = new WeakReference<ImageView>(imageView);
+		mMemImageCache = MemImageCache.getInstance();
 	}
 
 	public int getImageId() {
-		return mImageId;
+		return mMediaStoreImage.getImageId();
 	}
 
 	@Override
@@ -58,11 +52,11 @@ public class MediaStoreImageWorker extends ImageWorker {
 			if (mLoadImageType == LOAD_THUMBNAIL) {
 				int thumbnailType = params[4];
 				bitmapResult = MediaStoreImageUtils
-						.decodeBitmapThumbnailFromMediaStoreInternal(mImageId,
-								thumbnailType);
+						.decodeBitmapThumbnailFromMediaStoreInternal(
+								getImageId(), thumbnailType);
 			} else if (mLoadImageType == LOAD_ORIGIN) {
 				bitmapResult = MediaStoreImageUtils
-						.decodeBitmapOriginFromMediaStoreInternal(mImageId,
+						.decodeBitmapOriginFromMediaStoreInternal(getImageId(),
 								mReqWidth, mReqHeight);
 			}
 
@@ -71,15 +65,18 @@ public class MediaStoreImageWorker extends ImageWorker {
 			if (mLoadImageType == LOAD_THUMBNAIL) {
 				int thumbnailType = params[4];
 				bitmapResult = MediaStoreImageUtils
-						.decodeBitmapThumbnailFromMediaStoreExternal(mImageId,
-								thumbnailType);
+						.decodeBitmapThumbnailFromMediaStoreExternal(
+								getImageId(), thumbnailType);
 			} else if (mLoadImageType == LOAD_ORIGIN) {
 				bitmapResult = MediaStoreImageUtils
-						.decodeBitmapOriginFromMediaStoreExternal(mImageId,
+						.decodeBitmapOriginFromMediaStoreExternal(getImageId(),
 								mReqWidth, mReqHeight);
 			}
 
 		}
+
+		mMemImageCache.addBitmapToMemCache(mMediaStoreImage.getMemCacheKey(),
+				bitmapResult);
 
 		return bitmapResult;
 	}
@@ -100,7 +97,7 @@ public class MediaStoreImageWorker extends ImageWorker {
 	protected boolean isThisWorkerMySelf(ImageWorker thisWorker) {
 		if (thisWorker instanceof MediaStoreImageWorker) {
 			MediaStoreImageWorker thisMediaStoreImageWorker = (MediaStoreImageWorker) thisWorker;
-			if (thisMediaStoreImageWorker.getImageId() == mImageId) {
+			if (thisMediaStoreImageWorker.getImageId() == getImageId()) {
 				return true;
 			} else {
 				return false;
@@ -110,54 +107,44 @@ public class MediaStoreImageWorker extends ImageWorker {
 		return false;
 	}
 
-	public void loadBitmapThumbnailInternal(ImageView imageView, int imageId,
-			int thumbnailType) {
-		loadBitmap(imageView, imageId, DEFAULT_REQ_WIDTH, DEFAULT_REQ_HEIGHT,
-				true, true, thumbnailType);
-	}
+	public void loadBitmap(ImageView imageView) {
+		final String imageCacheKey = mMediaStoreImage.getMemCacheKey();
 
-	public void loadBitmapThumbnailExternal(ImageView imageView, int imageId,
-			int thumbnailType) {
-		loadBitmap(imageView, imageId, DEFAULT_REQ_WIDTH, DEFAULT_REQ_HEIGHT,
-				false, true, thumbnailType);
-	}
+		final Bitmap bitmapMemCached = mMemImageCache
+				.getBitmapFromMemCache(imageCacheKey);
 
-	public void loadBitmapOriginInternal(ImageView imageView, int imageId,
-			int reqWidth, int reqHeight) {
-		loadBitmap(imageView, imageId, reqWidth, reqHeight, true, false, 0);
-	}
-
-	public void loadBitmapOriginExternal(ImageView imageView, int imageId,
-			int reqWidth, int reqHeight) {
-		loadBitmap(imageView, imageId, reqWidth, reqHeight, false, false, 0);
-	}
-
-	private void loadBitmap(ImageView imageView, int imageId, int reqWidth,
-			int reqHeight, boolean loadInternal, boolean loadThumbnail,
-			int thumbnailType) {
+		// Found the bitmap in memory cache.
+		if (bitmapMemCached != null) {
+			imageView.setImageBitmap(bitmapMemCached);
+			return;
+		}
 
 		if (cancelPotentialWork(imageView)) {
-			final ImageWorker imageWorker = new MediaStoreImageWorker(imageId,
-					imageView);
+			final ImageWorker imageWorker = new MediaStoreImageWorker(
+					mMediaStoreImage, imageView);
 			final ImageWorker.AsyncDrawable asyncDrawable = new ImageWorker.AsyncDrawable(
 					ImageUtils.defaultBitmap, imageWorker);
 			imageView.setImageDrawable(asyncDrawable);
 
-			if (loadThumbnail) {
-				if (loadInternal) {
-					imageWorker.execute(reqWidth, reqHeight, LOAD_THUMBNAIL,
-							LOAD_INTERNAL, thumbnailType);
+			if (mMediaStoreImage.isThumbnail()) {
+				if (mMediaStoreImage.isInternal()) {
+					imageWorker.execute(mMediaStoreImage.getReqWidth(),
+							mMediaStoreImage.getReqHeight(), LOAD_THUMBNAIL,
+							LOAD_INTERNAL, mMediaStoreImage.getThumbnailType());
 				} else {
-					imageWorker.execute(reqWidth, reqHeight, LOAD_THUMBNAIL,
-							LOAD_EXTERNAL, thumbnailType);
+					imageWorker.execute(mMediaStoreImage.getReqWidth(),
+							mMediaStoreImage.getReqHeight(), LOAD_THUMBNAIL,
+							LOAD_EXTERNAL, mMediaStoreImage.getThumbnailType());
 				}
 
 			} else {
-				if (loadInternal) {
-					imageWorker.execute(reqWidth, reqHeight, LOAD_ORIGIN,
+				if (mMediaStoreImage.isInternal()) {
+					imageWorker.execute(mMediaStoreImage.getReqWidth(),
+							mMediaStoreImage.getReqHeight(), LOAD_ORIGIN,
 							LOAD_INTERNAL);
 				} else {
-					imageWorker.execute(reqWidth, reqHeight, LOAD_ORIGIN,
+					imageWorker.execute(mMediaStoreImage.getReqWidth(),
+							mMediaStoreImage.getReqHeight(), LOAD_ORIGIN,
 							LOAD_EXTERNAL);
 				}
 			}
