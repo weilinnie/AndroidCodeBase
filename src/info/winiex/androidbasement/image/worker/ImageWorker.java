@@ -19,7 +19,7 @@ public abstract class ImageWorker extends AsyncTask<Integer, Void, Bitmap> {
 	protected int mReqWidth;
 
 	protected int mReqHeight;
-	
+
 	protected int mDefaultBitmapResId;
 
 	public Bitmap getBitmapResult() {
@@ -33,7 +33,7 @@ public abstract class ImageWorker extends AsyncTask<Integer, Void, Bitmap> {
 	public int getReqHeight() {
 		return mReqHeight;
 	}
-	
+
 	public void setDefaultBitmapResId(int resId) {
 		mDefaultBitmapResId = resId;
 	}

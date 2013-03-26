@@ -57,14 +57,12 @@ public class DiskImageWorker extends ImageWorker {
 	public void loadBitmap(ImageView imageView, String imageFilePath,
 			int reqWidth, int reqHeight) {
 		if (cancelPotentialWork(imageView)) {
-			final ImageWorker imageWoker = new DiskImageWorker(
+			final ImageWorker imageWorker = new DiskImageWorker(
 					imageFilePath, imageView);
-			final Bitmap defaultBitmap = ImageUtils.decodeBitmapFromDisk(
-					imageFilePath, reqWidth, reqHeight);
 			final ImageWorker.AsyncDrawable asyncDrawable = new ImageWorker.AsyncDrawable(
-					defaultBitmap, imageWoker);
+					ImageUtils.defaultBitmap, imageWorker);
 			imageView.setImageDrawable(asyncDrawable);
-			imageWoker.execute(reqWidth, reqHeight);
+			imageWorker.execute(reqWidth, reqHeight);
 		}
 	}
 
