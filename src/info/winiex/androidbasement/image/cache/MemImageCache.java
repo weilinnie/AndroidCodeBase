@@ -8,8 +8,18 @@ public class MemImageCache {
 
 	private LruCache<String, Bitmap> mLruCache;
 
-	public MemImageCache() {
+	private static MemImageCache sINSTANCE;
+
+	private MemImageCache() {
 		initLruCache();
+	}
+
+	public static MemImageCache getInstance() {
+		if (sINSTANCE == null) {
+			sINSTANCE = new MemImageCache();
+		}
+
+		return sINSTANCE;
 	}
 
 	private void initLruCache() {
@@ -30,13 +40,13 @@ public class MemImageCache {
 			}
 		};
 	}
-	
+
 	public void addBitmapToMemCache(String key, Bitmap bitmap) {
 		if (getBitmapFromMemCache(key) != null) {
 			mLruCache.put(key, bitmap);
 		}
 	}
-	
+
 	public Bitmap getBitmapFromMemCache(String key) {
 		return mLruCache.get(key);
 	}

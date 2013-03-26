@@ -1,5 +1,6 @@
 package info.winiex.androidbasement.image.worker;
 
+import info.winiex.androidbasement.image.cache.MemImageCache;
 import info.winiex.androidbasement.image.type.DiskImage;
 import info.winiex.androidbasement.image.utils.ImageUtils;
 
@@ -12,17 +13,23 @@ public class DiskImageWorker extends ImageWorker {
 
 	private DiskImage mDiskImage;
 
+	private MemImageCache mMemImageCache;
+
 	public DiskImageWorker(DiskImage diskImage, ImageView imageView) {
 		mDiskImage = diskImage;
 		mImageReference = new WeakReference<ImageView>(imageView);
+		mMemImageCache = MemImageCache.getInstance();
 	}
 
 	@Override
 	protected Bitmap doInBackground(Integer... params) {
 		super.doInBackground(params);
 
-		return ImageUtils.decodeBitmapFromDisk(mDiskImage.getImageFilePath(),
-				mReqWidth, mReqHeight);
+		final Bitmap result = ImageUtils.decodeBitmapFromDisk(
+				mDiskImage.getImageFilePath(), mReqWidth, mReqHeight);
+		mMemImageCache.addBitmapToMemCache(mDiskImage.getMemCacheKey(), result);
+
+		return result;
 	}
 
 	private String getImageFilePath() {
@@ -57,6 +64,17 @@ public class DiskImageWorker extends ImageWorker {
 	}
 
 	public void loadBitmap(DiskImage diskImage, ImageView imageView) {
+		final String imageCacheKey = diskImage.getMemCacheKey();
+
+		final Bitmap bitmapMemCached = mMemImageCache
+				.getBitmapFromMemCache(imageCacheKey);
+
+		// Found the bitmap in memory cache.
+		if (bitmapMemCached != null) {
+			imageView.setImageBitmap(bitmapMemCached);
+			return;
+		}
+
 		if (cancelPotentialWork(imageView)) {
 			final ImageWorker imageWorker = new DiskImageWorker(diskImage,
 					imageView);
