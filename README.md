@@ -4,9 +4,20 @@
 
 #DOING
 
-1. 完成 image 包中的缓存部分（进而包含了图片类型的定义）
-2. 实现支持 MediaStore.Images 的 ImageWorker，也就是MediaStoreImageWorker
+1. 完成设置缺省缓存参数的 ImageCache 类。
+2. 完善 DiskImageCache 类。
 
 #TODO
 
-1. 实现 PreferenceUtils
+1. 实现 PreferenceUtils。
+2. 实现 Android 版本代号和版本号之间进行转化的类。
+3. 完成解决了中英文混排换行不规则问题的自定义 TextView。
+
+#IDEAS
+
+##TECHNICAL
+
+1. HttpImageWorker 需要使用 DiskImageCache，而 DiskImageCache 需要使用 MemImageCache。
+2. ResourceImageWorker 和 DiskImageWorker 使用 MemImageCache 即可。
+
+## PRODUCT
