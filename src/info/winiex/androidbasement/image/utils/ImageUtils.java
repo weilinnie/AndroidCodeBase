@@ -1,6 +1,7 @@
 package info.winiex.androidbasement.image.utils;
 
 import info.winiex.androidbasement.R;
+import info.winiex.androidbasement.utils.AndroidVersion;
 import info.winiex.androidbasement.utils.AppData;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

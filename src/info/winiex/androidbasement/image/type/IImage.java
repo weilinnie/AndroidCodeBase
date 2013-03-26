@@ -2,12 +2,16 @@ package info.winiex.androidbasement.image.type;
 
 public interface IImage {
 
-	String getMemoryCacheKey();
+	String getMemCacheKey();
 
 	String getDiskCacheKey();
 
-	int getWidth();
+	void setReqWidth(int reqWidth);
 
-	int getLength();
+	int getReqWidth();
+
+	void setReqHeight(int reqHeight);
+
+	int getReqHeight();
 
 }

@@ -2,24 +2,40 @@ package info.winiex.androidbasement.image.type;
 
 public class ResourceImage extends BaseImage {
 
-	@Override
-	public String getMemoryCacheKey() {
-		return null;
+	private int mResId;
+
+	public ResourceImage(int reqWidth, int reqHeight, int resId) {
+		mReqWidth = reqWidth;
+		mReqHeight = reqHeight;
+		mResId = resId;
 	}
 
+	public int getResId() {
+		return mResId;
+	}
+
+	@Override
+	public String getMemCacheKey() {
+		return String.valueOf(mResId) + "#" + "width"
+				+ String.valueOf(mReqWidth) + "height"
+				+ String.valueOf(mReqHeight);
+	}
+
+	@Deprecated
 	@Override
 	public String getDiskCacheKey() {
-		return null;
+		return String.valueOf(mResId) + "#" + "width"
+				+ String.valueOf(mReqWidth) + "height"
+				+ String.valueOf(mReqHeight);
 	}
 
 	@Override
-	public int getWidth() {
-		return 0;
-	}
-
-	@Override
-	public int getLength() {
-		return 0;
+	public boolean equals(Object o) {
+		boolean isEqual = false;
+		if (o != null && o instanceof ResourceImage) {
+			isEqual = mResId == ((ResourceImage) o).getResId();
+		}
+		return isEqual;
 	}
 
 }

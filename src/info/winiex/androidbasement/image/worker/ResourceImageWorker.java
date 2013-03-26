@@ -1,5 +1,6 @@
 package info.winiex.androidbasement.image.worker;
 
+import info.winiex.androidbasement.image.type.ResourceImage;
 import info.winiex.androidbasement.image.utils.ImageUtils;
 
 import java.lang.ref.WeakReference;
@@ -9,23 +10,23 @@ import android.widget.ImageView;
 
 public class ResourceImageWorker extends ImageWorker {
 
-	private int mResId;
+	private ResourceImage mResourceImage;
 
-	public ResourceImageWorker(int resId, ImageView imageView) {
-		mResId = resId;
+	public ResourceImageWorker(ResourceImage resourceImage, ImageView imageView) {
+		mResourceImage = resourceImage;
 		mImageReference = new WeakReference<ImageView>(imageView);
 	}
 
 	public int getResId() {
-		return mResId;
+		return mResourceImage.getResId();
 	}
 
 	@Override
 	protected Bitmap doInBackground(Integer... params) {
 		super.doInBackground(params);
 
-		return ImageUtils.decodeBitmapFromResource(mResId, mReqWidth,
-				mReqHeight);
+		return ImageUtils.decodeBitmapFromResource(mResourceImage.getResId(),
+				mReqWidth, mReqHeight);
 	}
 
 	@Override
@@ -44,7 +45,7 @@ public class ResourceImageWorker extends ImageWorker {
 	protected boolean isThisWorkerMySelf(ImageWorker thisWorker) {
 		if (thisWorker instanceof ResourceImageWorker) {
 			ResourceImageWorker thisResourceImageWorker = (ResourceImageWorker) thisWorker;
-			if (thisResourceImageWorker.getResId() == mResId) {
+			if (thisResourceImageWorker.getResId() == mResourceImage.getResId()) {
 				return true;
 			} else {
 				return false;
@@ -53,15 +54,15 @@ public class ResourceImageWorker extends ImageWorker {
 		return false;
 	}
 
-	public void loadBitmap(ImageView imageView, int resId, int reqWidth,
-			int reqHeight) {
+	public void loadBitmap(ResourceImage resourceImage, ImageView imageView) {
 		if (cancelPotentialWork(imageView)) {
 			final ResourceImageWorker imageWorker = new ResourceImageWorker(
-					resId, imageView);
+					resourceImage, imageView);
 			final ImageWorker.AsyncDrawable asyncDrawable = new ImageWorker.AsyncDrawable(
 					ImageUtils.defaultBitmap, imageWorker);
 			imageView.setImageDrawable(asyncDrawable);
-			imageWorker.execute(reqWidth, reqHeight);
+			imageWorker.execute(resourceImage.getReqWidth(),
+					resourceImage.getReqHeight());
 		}
 	}
 }

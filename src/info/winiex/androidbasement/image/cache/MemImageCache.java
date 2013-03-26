@@ -30,5 +30,15 @@ public class MemImageCache {
 			}
 		};
 	}
+	
+	public void addBitmapToMemCache(String key, Bitmap bitmap) {
+		if (getBitmapFromMemCache(key) != null) {
+			mLruCache.put(key, bitmap);
+		}
+	}
+	
+	public Bitmap getBitmapFromMemCache(String key) {
+		return mLruCache.get(key);
+	}
 
 }

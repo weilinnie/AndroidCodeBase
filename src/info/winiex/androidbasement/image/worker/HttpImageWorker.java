@@ -1,5 +1,6 @@
 package info.winiex.androidbasement.image.worker;
 
+import info.winiex.androidbasement.image.type.HttpImage;
 import info.winiex.androidbasement.image.utils.ImageUtils;
 
 import java.lang.ref.WeakReference;
@@ -9,10 +10,10 @@ import android.widget.ImageView;
 
 public class HttpImageWorker extends ImageWorker {
 
-	private String mUriStr;
+	HttpImage mHttpImage;
 
-	public HttpImageWorker(String uriStr, ImageView imageView) {
-		this.mUriStr = uriStr;
+	public HttpImageWorker(HttpImage httpImage, ImageView imageView) {
+		mHttpImage = httpImage;
 		mImageReference = new WeakReference<ImageView>(imageView);
 	}
 
@@ -20,11 +21,12 @@ public class HttpImageWorker extends ImageWorker {
 	protected Bitmap doInBackground(Integer... params) {
 		super.doInBackground(params);
 
-		return ImageUtils.decodeBitmapFromHttp(mUriStr, mReqWidth, mReqHeight);
+		return ImageUtils.decodeBitmapFromHttp(mHttpImage.getUriStr(),
+				mReqWidth, mReqHeight);
 	}
 
 	public String getUriStr() {
-		return mUriStr;
+		return mHttpImage.getUriStr();
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public class HttpImageWorker extends ImageWorker {
 	protected boolean isThisWorkerMySelf(ImageWorker thisWorker) {
 		if (thisWorker instanceof HttpImageWorker) {
 			HttpImageWorker thisHttpImageWorker = (HttpImageWorker) thisWorker;
-			if (thisHttpImageWorker.getUriStr().equals(mUriStr)) {
+			if (thisHttpImageWorker.getUriStr().equals(mHttpImage.getUriStr())) {
 				return true;
 			} else {
 				return false;
@@ -45,17 +47,15 @@ public class HttpImageWorker extends ImageWorker {
 		return false;
 	}
 
-	protected void loadBitmap(ImageView imageView, String uriStr, int reqWidth,
-			int reqHeight) {
+	protected void loadBitmap(HttpImage httpImage, ImageView imageView) {
 		if (cancelPotentialWork(imageView)) {
-			final ImageWorker imageWorker = new HttpImageWorker(uriStr,
+			final ImageWorker imageWorker = new HttpImageWorker(httpImage,
 					imageView);
-			final Bitmap defaultBitmap = ImageUtils.decodeBitmapFromHttp(
-					uriStr, reqWidth, reqHeight);
 			final ImageWorker.AsyncDrawable asyncDrawable = new ImageWorker.AsyncDrawable(
-					defaultBitmap, imageWorker);
+					ImageUtils.defaultBitmap, imageWorker);
 			imageView.setImageDrawable(asyncDrawable);
-			imageWorker.execute(reqWidth, reqHeight);
+			imageWorker.execute(httpImage.getReqWidth(),
+					httpImage.getReqHeight());
 		}
 	}
 

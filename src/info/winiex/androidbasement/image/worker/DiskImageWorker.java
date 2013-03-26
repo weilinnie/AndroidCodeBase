@@ -1,5 +1,6 @@
 package info.winiex.androidbasement.image.worker;
 
+import info.winiex.androidbasement.image.type.DiskImage;
 import info.winiex.androidbasement.image.utils.ImageUtils;
 
 import java.lang.ref.WeakReference;
@@ -9,23 +10,23 @@ import android.widget.ImageView;
 
 public class DiskImageWorker extends ImageWorker {
 
-	private String mImageFilePath;
+	private DiskImage mDiskImage;
 
-	public DiskImageWorker(String imageFilePath, ImageView imageView) {
-		mImageFilePath = imageFilePath;
+	public DiskImageWorker(DiskImage diskImage, ImageView imageView) {
+		mDiskImage = diskImage;
 		mImageReference = new WeakReference<ImageView>(imageView);
-	}
-
-	public String getImageFilePath() {
-		return mImageFilePath;
 	}
 
 	@Override
 	protected Bitmap doInBackground(Integer... params) {
 		super.doInBackground(params);
 
-		return ImageUtils.decodeBitmapFromDisk(mImageFilePath, mReqWidth,
-				mReqHeight);
+		return ImageUtils.decodeBitmapFromDisk(mDiskImage.getImageFilePath(),
+				mReqWidth, mReqHeight);
+	}
+
+	private String getImageFilePath() {
+		return mDiskImage.getImageFilePath();
 	}
 
 	@Override
@@ -45,7 +46,8 @@ public class DiskImageWorker extends ImageWorker {
 	protected boolean isThisWorkerMySelf(ImageWorker thisWorker) {
 		if (thisWorker instanceof DiskImageWorker) {
 			DiskImageWorker thisDiskImageWorker = (DiskImageWorker) thisWorker;
-			if (thisDiskImageWorker.getImageFilePath().equals(mImageFilePath)) {
+			if (thisDiskImageWorker.getImageFilePath().equals(
+					mDiskImage.getImageFilePath())) {
 				return true;
 			} else {
 				return false;
@@ -54,15 +56,15 @@ public class DiskImageWorker extends ImageWorker {
 		return false;
 	}
 
-	public void loadBitmap(ImageView imageView, String imageFilePath,
-			int reqWidth, int reqHeight) {
+	public void loadBitmap(DiskImage diskImage, ImageView imageView) {
 		if (cancelPotentialWork(imageView)) {
-			final ImageWorker imageWorker = new DiskImageWorker(
-					imageFilePath, imageView);
+			final ImageWorker imageWorker = new DiskImageWorker(diskImage,
+					imageView);
 			final ImageWorker.AsyncDrawable asyncDrawable = new ImageWorker.AsyncDrawable(
 					ImageUtils.defaultBitmap, imageWorker);
 			imageView.setImageDrawable(asyncDrawable);
-			imageWorker.execute(reqWidth, reqHeight);
+			imageWorker.execute(diskImage.getReqWidth(),
+					diskImage.getReqHeight());
 		}
 	}
 

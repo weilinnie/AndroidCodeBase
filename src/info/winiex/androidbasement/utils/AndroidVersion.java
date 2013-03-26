@@ -1,12 +1,12 @@
-package info.winiex.androidbasement.image.utils;
+package info.winiex.androidbasement.utils;
 
 /**
- ***********************************************************
+ * <p>
  * This code is taken from https://code.google.com/p/android
- * -beryl/source/browse/beryl/src/org/beryl/app/AndroidVersion.java
+ * -beryl/source/browse/beryl/src/org/beryl/app/AndroidVersion.java.
  * 
- * Thanks for Jeremy Edwards's excellent works! 
- *********************************************************** 
+ * Thanks for Jeremy Edwards's excellent works!
+ * </p>
  * Convenience class for retrieving the current Android version that's running
  * on the device.
  * 
