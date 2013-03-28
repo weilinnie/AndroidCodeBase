@@ -20,14 +20,14 @@ public class ImageUtils {
 	public static BitmapFactory.Options getResourceImageOptions(int resId) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeResource(AppData.getResources(), resId);
+		BitmapFactory.decodeResource(AppData.getResources(), resId, options);
 		return options;
 	}
 
 	public static BitmapFactory.Options getDiskImageOptions(String imageFilePath) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeFile(imageFilePath);
+		BitmapFactory.decodeFile(imageFilePath, options);
 		return options;
 	}
 

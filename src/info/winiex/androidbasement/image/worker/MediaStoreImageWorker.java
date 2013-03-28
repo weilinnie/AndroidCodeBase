@@ -8,6 +8,7 @@ import info.winiex.androidbasement.image.utils.MediaStoreImageUtils;
 import java.lang.ref.WeakReference;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.ImageView;
 
 public class MediaStoreImageWorker extends ImageWorker {
@@ -52,11 +53,11 @@ public class MediaStoreImageWorker extends ImageWorker {
 			if (mLoadImageType == LOAD_THUMBNAIL) {
 				int thumbnailType = params[4];
 				bitmapResult = MediaStoreImageUtils
-						.decodeBitmapThumbnailFromMediaStoreInternal(
+						.decodeThumbnailInternalBitmapFromMediaStore(
 								getImageId(), thumbnailType);
 			} else if (mLoadImageType == LOAD_ORIGIN) {
 				bitmapResult = MediaStoreImageUtils
-						.decodeBitmapOriginFromMediaStoreInternal(getImageId(),
+						.decodeOriginInternalBitmapFromMediaStore(getImageId(),
 								mReqWidth, mReqHeight);
 			}
 
@@ -65,11 +66,11 @@ public class MediaStoreImageWorker extends ImageWorker {
 			if (mLoadImageType == LOAD_THUMBNAIL) {
 				int thumbnailType = params[4];
 				bitmapResult = MediaStoreImageUtils
-						.decodeBitmapThumbnailFromMediaStoreExternal(
+						.decodeThumbnailExternalBitmapFromMediaStore(
 								getImageId(), thumbnailType);
 			} else if (mLoadImageType == LOAD_ORIGIN) {
 				bitmapResult = MediaStoreImageUtils
-						.decodeBitmapOriginFromMediaStoreExternal(getImageId(),
+						.decodeOriginExternalBitmapFromMediaStore(getImageId(),
 								mReqWidth, mReqHeight);
 			}
 
@@ -116,6 +117,7 @@ public class MediaStoreImageWorker extends ImageWorker {
 		// Found the bitmap in memory cache.
 		if (bitmapMemCached != null) {
 			imageView.setImageBitmap(bitmapMemCached);
+			Log.wtf("---------------------", "Cache 命中");
 			return;
 		}
 

@@ -78,6 +78,7 @@ public class DiskImageWorker extends ImageWorker {
 		if (cancelPotentialWork(imageView)) {
 			final ImageWorker imageWorker = new DiskImageWorker(mDiskImage,
 					imageView);
+			
 			final ImageWorker.AsyncDrawable asyncDrawable = new ImageWorker.AsyncDrawable(
 					ImageUtils.defaultBitmap, imageWorker);
 			imageView.setImageDrawable(asyncDrawable);
