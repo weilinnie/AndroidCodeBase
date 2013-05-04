@@ -96,10 +96,10 @@ public class ImageUtils {
 	}
 
 	public static long getBitmapSizeInBytes(Bitmap bitmap) {
-	    if(AndroidVersion.isHoneycombMr2OrHigher()) {
-	        return bitmap.getByteCount();
-	    } else {
-	        return bitmap.getRowBytes() * bitmap.getHeight();
-	    }
+		if (AndroidVersion.isHoneycombMr2OrHigher()) {
+			return bitmap.getByteCount();
+		} else {
+			return bitmap.getRowBytes() * bitmap.getHeight();
+		}
 	}
 }

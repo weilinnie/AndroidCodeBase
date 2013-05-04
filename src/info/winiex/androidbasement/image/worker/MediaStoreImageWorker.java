@@ -117,7 +117,6 @@ public class MediaStoreImageWorker extends ImageWorker {
 		// Found the bitmap in memory cache.
 		if (bitmapMemCached != null) {
 			imageView.setImageBitmap(bitmapMemCached);
-			Log.wtf("---------------------", "Cache 命中");
 			return;
 		}
 
